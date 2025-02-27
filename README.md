@@ -1,2 +1,2 @@
-# interview-test-infra
-This project contains the infra configs for my interview project
+# interview-test-app
+This project contains the configs for my interview project
