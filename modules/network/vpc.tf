@@ -16,7 +16,7 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "5.19.0"
 
-  name = var.app_name
+  name = format("%s-%s-vpc", var.app_name, lookup(var.tags, "environment"))
   cidr = var.vpc_cidr
 
   azs                 = local.azs
