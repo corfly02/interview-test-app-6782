@@ -19,6 +19,7 @@ module "catEcr" {
 
   app_name     = var.app_name
   scan_on_push = var.scan_on_push
+  bucket_name  = format("%s-%s-%s", var.app_name, data.aws_caller_identity.current)
 
   tags = merge(var.tags, var.app_name)
 }

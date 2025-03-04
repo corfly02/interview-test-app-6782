@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "app_bucket" {
-  bucket = format("%s-%s-%s", var.app_name, data.aws_caller_identity.current)
+  bucket = var.bucket_name
 }
 
 resource "aws_s3_bucket_versioning" "app_bucket_versioning" {
