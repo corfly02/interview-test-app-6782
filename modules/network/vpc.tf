@@ -6,7 +6,6 @@ provider "aws" {
 }
 
 data "aws_availability_zones" "available" {}
-data "aws_region" "current" {}
 
 locals {
   azs = slice(data.aws_availability_zones.available.names, 0, 3)
