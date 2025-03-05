@@ -45,7 +45,7 @@ resource "aws_iam_role_policy_attachment" "merged_policies" {
 }
 
 resource "aws_s3_bucket" "app_bucket" {
-  bucket = "terraform-state-bucket-${data.aws_caller_identity.current}"
+  bucket = "terraform-state-bucket-${data.aws_caller_identity.current.id}"
 }
 
 resource "aws_s3_bucket_versioning" "app_bucket_versioning" {
