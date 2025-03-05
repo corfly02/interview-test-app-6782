@@ -30,7 +30,7 @@ jobs:
         env:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           REPOSITORY: ${{ env.ECR_REPO }}
-          IMAGE_TAG: ${{ GITHUB_SHA }}
+          IMAGE_TAG: ${{ env.GITHUB_SHA }}
         run: |
           cd app
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
