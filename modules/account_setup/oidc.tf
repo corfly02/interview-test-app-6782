@@ -27,8 +27,6 @@ data "aws_iam_policy_document" "github_repos" {
 resource "aws_iam_role" "github_actions" {
   name               = "GitHubActionsRole"
   assume_role_policy = data.aws_iam_policy_document.github_repos.json
-
-  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "merged_policies" {
