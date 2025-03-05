@@ -81,11 +81,6 @@ variable "ecs_cluster_discovery_namespace" {
   default     = ""
   description = "Name of the shared ECS namespace."
 }
-variable "container_insights_log_group_retention" {
-  type        = number
-  default     = 1
-  description = "Specifies the number of days you want to retain log events in the specified log group. Possible values are: 1, 3, 5, 7, 14, 30, 60, 90, 120, 150, 180, 365, 400, 545, 731, 1827, 3653, and 0. If you select 0, the events in the log group are always retained and never expire."
-}
 variable "ecs_namespaces" {
   type = map(object({
     name        = string

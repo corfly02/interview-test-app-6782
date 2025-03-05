@@ -5,6 +5,8 @@ provider "aws" {
   }
 }
 
+data "aws_caller_identity" "current" {}
+
 resource "aws_iam_openid_connect_provider" "github" {
   url            = "https://token.actions.githubusercontent.com"
   client_id_list = ["sts.amazonaws.com"]
@@ -40,4 +42,31 @@ resource "aws_iam_role_policy_attachment" "merged_policies" {
   for_each   = var.role_policies
   role       = aws_iam_role.github_actions.name
   policy_arn = each.value
+}
+
+resource "aws_s3_bucket" "app_bucket" {
+  bucket = "terraform-state-bucket-${data.aws_caller_identity.current}"
+}
+
+resource "aws_s3_bucket_versioning" "app_bucket_versioning" {
+  bucket = aws_s3_bucket.app_bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "app_bucket_access" {
+  bucket                  = aws_s3_bucket.app_bucket.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_ownership_controls" "app_bucket_ownership_rule" {
+  bucket = aws_s3_bucket.app_bucket.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
 }

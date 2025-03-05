@@ -33,16 +33,10 @@ resource "aws_sns_topic" "error_log_alert" {
   name = "log-alert-topic"
 }
 
-resource "aws_ssm_parameter" "alert_contact_email" {
-  name  = "alert-contact"
-  type  = "String"
-  value = var.alert_contact_email
-}
-
 resource "aws_sns_topic_subscription" "email_subscription" {
   topic_arn = aws_sns_topic.error_log_alert.arn
   protocol  = "email"
-  endpoint  = aws_ssm_parameter.alert_contact_email.value
+  endpoint  = var.alert_contact_email
 }
 
 resource "aws_cloudwatch_log_metric_filter" "error_filter" {

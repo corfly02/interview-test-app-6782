@@ -21,7 +21,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          region: us-east-1
+          aws-region: us-east-1
           role-to-assume: arn:aws:iam::674890471878:role/GitHubActionsRole
       
       - name: Login to Amazon ECR
@@ -54,6 +54,7 @@ jobs:
         output-file: README.md
         output-method: inject
         git-push: "true"
+        path: terraform
 
   tf_fmt:
     runs-on: ubuntu-latest
