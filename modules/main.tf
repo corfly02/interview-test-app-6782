@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
 locals {
-  azs      = slice(data.aws_availability_zones.available.names, 0, 3)
+  azs            = slice(data.aws_availability_zones.available.names, 0, 3)
   container_name = format("%s-%s-container", var.app_name, lookup(var.tags, "environment"))
 }
 

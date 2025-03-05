@@ -10,26 +10,26 @@ variable "tags" {
 }
 
 variable "aws_region" {
-  type = string
+  type        = string
   description = "The default region you are deploying resources"
-  default = "us-east-1"
+  default     = "us-east-1"
 }
 
 #ALB
 variable "enable_deletion_protection" {
-  type = bool
+  type        = bool
   description = "Enables deletion protection on ALB"
-  default = false
+  default     = false
 }
 
 #VPC
 variable "vpc_cidr" {
-  type = string
+  type        = string
   description = "The CIDR for your VPC"
 }
 
 #ECS
 variable "container_port" {
-  type = number
+  type        = number
   description = "The container port and host port for your container"
 }

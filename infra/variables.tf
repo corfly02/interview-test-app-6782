@@ -19,7 +19,7 @@ variable "vpc_cidr" {
 
 #ECS
 variable "container_port" {
-  type = number
+  type        = number
   description = "The container port and host port for your container"
-  default = 8080
+  default     = 8080
 }
