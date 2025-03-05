@@ -1,9 +1,11 @@
 name: Build and Push to ECR
 
 on:
-  push:
-    branches:
-      - feature/initial-module-creation
+  - pull_request
+
+permissions:
+  contents: read
+  pull-requests: write
 
 jobs:
   build_and_push:
@@ -20,7 +22,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           region: us-east-1
-          role-to-assume: my-github-actions-role
+          role-to-assume: arn:aws:iam::674890471878:role/GitHubActionsRole
       
       - name: Login to Amazon ECR
         id: login-ecr
@@ -36,7 +38,7 @@ jobs:
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
 
-  docs:
+  tf_docs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -52,3 +54,17 @@ jobs:
         output-file: README.md
         output-method: inject
         git-push: "true"
+
+  tf_fmt:
+    runs-on: ubuntu-latest
+    name: Fix terraform formatting in example terraform configuration
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: terraform fmt
+        uses: dflook/terraform-fmt@v1
+        with:
+          path: terraform
