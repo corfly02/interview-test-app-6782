@@ -9,6 +9,12 @@ variable "tags" {
   description = "Tags that will be abblied to all resources as default tags."
 }
 
+variable "aws_region" {
+  type = string
+  description = "The default region you are deploying resources"
+  default = "us-east-1"
+}
+
 #ecr
 variable "image_tag_mutability" {
   type        = string
