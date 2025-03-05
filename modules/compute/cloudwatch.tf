@@ -40,7 +40,7 @@ resource "aws_ssm_parameter" "alert_contact_email" {
 }
 
 resource "aws_sns_topic_subscription" "email_subscription" {
-  topic_arn = aws_sns_topic.log_alerts.arn
+  topic_arn = aws_sns_topic.error_log_alert.arn
   protocol  = "email"
   endpoint  = aws_ssm_parameter.alert_contact_email.value
 }
