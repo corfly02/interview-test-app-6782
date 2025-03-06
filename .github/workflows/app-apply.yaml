@@ -13,6 +13,9 @@ permissions:
 jobs:
   tf_plan:
     runs-on: ubuntu-latest
+    defaults: 
+      run:
+        working-directory: ./app
     name: Plan terraform configuration
     steps:
       - name: Checkout
