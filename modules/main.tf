@@ -168,7 +168,7 @@ module "alb" {
       from_port   = 5000
       to_port     = 5000
       ip_protocol = "tcp"
-      cidr_ipv4   = "136.47.225.96/0"
+      cidr_ipv4   = "136.47.225.96/32"
     }
   }
   security_group_egress_rules = {
