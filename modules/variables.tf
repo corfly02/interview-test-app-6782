@@ -34,6 +34,11 @@ variable "container_port" {
   description = "The container port and host port for your container"
 }
 
+variable "image" {
+  type        = string
+  description = "The arn of the image in ECR"
+}
+
 #Cloudwatch
 
 variable "retention_in_days" {
@@ -48,7 +53,7 @@ variable "alert_contact_email" {
 }
 
 
-#ecr
+#ECR
 variable "image_tag_mutability" {
   type        = string
   description = "The tag mutability setting for the repo."

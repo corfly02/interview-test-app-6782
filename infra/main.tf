@@ -14,6 +14,7 @@ module "my_interview_app" {
   app_name            = var.app_name
   vpc_cidr            = var.vpc_cidr
   container_port      = var.container_port
+  image               = var.image
   alert_contact_email = var.alert_contact_email
 
   tags = var.tags

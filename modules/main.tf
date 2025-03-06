@@ -37,21 +37,13 @@ module "ecs_service" {
 
   enable_execute_command = true
 
-  task_exec_iam_role_policies = {
-    firehose = "arn:aws:iam::aws:policy/AmazonKinesisFirehoseFullAccess"
-  }
-
-  tasks_iam_role_policies = {
-    firehose = "arn:aws:iam::aws:policy/AmazonKinesisFirehoseFullAccess"
-  }
-
   container_definitions = {
 
     (local.container_name) = {
       cpu       = 512
       memory    = 1024
       essential = true
-      image     = "public.ecr.aws/aws-containers/ecsdemo-frontend:776fd50"
+      image     = var.image
       port_mappings = [
         {
           name          = local.container_name
