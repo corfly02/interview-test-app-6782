@@ -51,4 +51,4 @@ jobs:
           path: ./infra
           backend_config_file: ./infra/dev/backend.config
           var_file: ./infra/dev/vars/dev.tfvars
-          auto-approve: true
+          auto_approve: true
