@@ -29,8 +29,6 @@ jobs:
       
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
-        with: 
-          repo: ${{ env.ECR_REPO }}
 
       - name: Retrieve the latest Docker tag from ECR
         id: ecr_info
@@ -52,7 +50,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG} --network host --push -f /app .
+          pwd
+          docker build -t ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG} --network host --push -f /app/ .
 
       - name: Set NEW_TAG output
         id: set_new_tag
