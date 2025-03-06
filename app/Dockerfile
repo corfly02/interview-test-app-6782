@@ -1,14 +1,15 @@
-FROM alpine:3.21
+# Use an official lightweight Python image
+FROM python:3.9-slim
 
-# Install curl and netCAT
-RUN apk add --no-cache curl netcat-openbsd
+# Set the working directory inside the container
+WORKDIR /app
 
-# Copy in our CAT RETRIEVER
-COPY ./app/run.sh /run.sh
-RUN chmod +x /run.sh
+# Copy the script and requirements
+COPY cat_gif_generator.py .
+COPY requirements.txt .
 
-# Expose port 8080 or whatever you want to deploy
-EXPOSE 8080
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Run the cat RETRIEVER
-CMD ["/bin/sh", "/run.sh"]
+# Run the script when the container starts
+CMD ["python", "cat_gif_generator.py"]
