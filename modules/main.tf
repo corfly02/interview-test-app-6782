@@ -8,7 +8,8 @@ locals {
 
 
 module "ecs_cluster" {
-  source = "../../modules/cluster"
+  source  = "terraform-aws-modules/ecs/aws//modules/cluster"
+  version = "5.12.0"
 
   cluster_name = format("%s-%s-cluster", var.app_name, lookup(var.tags, "environment"))
 
@@ -24,7 +25,8 @@ module "ecs_cluster" {
 }
 
 module "ecs_service" {
-  source = "../../modules/service"
+  source  = "terraform-aws-modules/ecs/aws//modules/service"
+  version = "5.12.0"
 
   name        = format("%s-%s-service", var.app_name, lookup(var.tags, "environment"))
   cluster_arn = module.ecs_cluster.arn
@@ -78,7 +80,7 @@ module "ecs_service" {
         options = {
           Name                    = "firehose"
           region                  = data.aws_region.current.name
-          delivery_stream         = "my-stream"
+          delivery_stream         = format("%s-%s-stream", var.app_name, lookup(var.tags, "environment"))
           log-driver-buffer-limit = "2097152"
         }
       }
@@ -132,55 +134,6 @@ module "ecs_service" {
       description              = "Service port"
       source_security_group_id = module.alb.security_group_id
     }
-    egress_all = {
-      type        = "egress"
-      from_port   = 0
-      to_port     = 0
-      protocol    = "-1"
-      cidr_blocks = ["0.0.0.0/0"]
-    }
-  }
-}
-
-# Task Definition 
-module "ecs_task_definition" {
-  source = "../../modules/service"
-
-  # Service
-  name           = format("%s-%s-task-def", var.app_name, lookup(var.tags, "environment"))
-  cluster_arn    = module.ecs_cluster.arn
-  create_service = false
-
-  # Task Definition
-  volume = {
-    ex-vol = {}
-  }
-
-  runtime_platform = {
-    cpu_architecture        = "ARM64"
-    operating_system_family = "LINUX"
-  }
-
-  # Container definition(s)
-  container_definitions = {
-    al2023 = {
-      image = "public.ecr.aws/amazonlinux/amazonlinux:2023-minimal"
-
-      mount_points = [
-        {
-          sourceVolume  = "ex-vol",
-          containerPath = "/var/www/ex-vol"
-        }
-      ]
-
-      command    = ["echo hello world"]
-      entrypoint = ["/usr/bin/sh", "-c"]
-    }
-  }
-
-  subnet_ids = module.vpc.private_subnets
-
-  security_group_rules = {
     egress_all = {
       type        = "egress"
       from_port   = 0
@@ -280,4 +233,27 @@ module "vpc" {
 
   enable_nat_gateway = true
   single_nat_gateway = true
+}
+
+#ECR
+resource "aws_ecr_repository" "repository" {
+  name                 = "${var.app_name}-project-repo"
+  image_tag_mutability = var.image_tag_mutability
+
+  image_scanning_configuration {
+    scan_on_push = var.scan_on_push
+  }
+}
+
+resource "aws_ecr_lifecycle_policy" "lifecycle_rule" {
+  repository = aws_ecr_repository.repository.name
+
+  policy = jsonencode({
+    rules = [for rule in var.ecr_lifecycle_policy : {
+      rulePriority = rule.rulePriority
+      description  = rule.description
+      selection    = rule.selection
+      action       = rule.action
+    }]
+  })
 }
