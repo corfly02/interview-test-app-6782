@@ -11,7 +11,7 @@ permissions:
   pull-requests: write
 
 jobs:
-  plan:
+  tf_plan:
     runs-on: ubuntu-latest
     name: Create a plan for an example terraform configuration
     steps:
@@ -33,6 +33,7 @@ jobs:
 
   apply-plan:
     runs-on: ubuntu-latest
+    needs: tf_plan
     name: Apply terraform plan
     steps:
       - name: Checkout
