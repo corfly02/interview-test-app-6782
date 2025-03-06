@@ -1,14 +1,17 @@
-FROM alpine:3.21
+# Use Python 3.9+
+FROM python:3.9
 
-# Install curl and netCAT
-RUN apk add --no-cache curl netcat-openbsd
+# Set working directory
+WORKDIR /app
 
-# Copy in our CAT RETRIEVER
-COPY ./app/run.sh /run.sh
-RUN chmod +x /run.sh
+# Copy application files
+COPY . .
 
-# Expose port 8080 or whatever you want to deploy
-EXPOSE 8080
+# Install dependencies
+RUN pip install --no-cache-dir flask requests pillow gunicorn
 
-# Run the cat RETRIEVER
-CMD ["/bin/sh", "/run.sh"]
+# Expose port
+EXPOSE 5000
+
+# Run the Flask app with Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
