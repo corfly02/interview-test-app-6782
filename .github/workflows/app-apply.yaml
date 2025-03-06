@@ -30,8 +30,8 @@ jobs:
       - name: terraform plan
         uses: dflook/terraform-plan@v1
         with:
-          backend_config_file: ./infra/dev/backend.config
-          var_file: ./infra/dev/vars/dev.tfvars
+          backend_config_file: ./dev/backend.config
+          var_file: ./dev/vars/dev.tfvars
 
   apply-plan:
     runs-on: ubuntu-latest
@@ -53,7 +53,6 @@ jobs:
       - name: terraform apply
         uses: dflook/terraform-apply@v1
         with:
-          path: ./infra
-          backend_config_file: ./infra/dev/backend.config
-          var_file: ./infra/dev/vars/dev.tfvars
+          backend_config_file: ./dev/backend.config
+          var_file: ./dev/vars/dev.tfvars
           auto_approve: true
