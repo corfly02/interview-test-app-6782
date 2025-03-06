@@ -14,8 +14,6 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     name: Create a plan for an example terraform configuration
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,8 +33,6 @@ jobs:
   apply-plan:
     runs-on: ubuntu-latest
     name: Apply terraform plan
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
