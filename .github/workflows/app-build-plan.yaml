@@ -1,0 +1,60 @@
+name: Build and Push to ECR
+
+on:
+  - pull_request
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    
+    env:
+      ECR_REPO: interview-app-project-repo
+      AWS_ACCOUNT: "674890471878"
+      AWS_REGION: us-east-1
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::674890471878:role/GitHubActionsRole
+      
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Retrieve the latest Docker tag from ECR
+        id: ecr_info
+        run: |
+          LATEST_TAG=$(aws ecr describe-images \
+            --repository-name ${{ env.ECR_REPO }} \
+            --query 'sort_by(imageDetails, &imagePushedAt)[-1].imageTags[0]' \
+            --output text)
+          echo "Current image tag is $LATEST_TAG"
+          if [ "$LATEST_TAG" = "None" ]; then
+            echo "NEW_TAG=0.0.1" >> $GITHUB_ENV
+          else
+            IFS='.' read -ra VER <<< "$LATEST_TAG"
+            VER[2]=$((VER[2]+1))  # Increment patch version
+            NEW_TAG="${VER[0]}.${VER[1]}.${VER[2]}"
+            echo "New image tag will be $NEW_TAG"
+            echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+          fi
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG} --network host -f app/Dockerfile .
+          docker push ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG}
+
+
+      - name: Set NEW_TAG output
+        id: set_new_tag
+        run: |
+          echo "new_tag=${NEW_TAG}" >> $GITHUB_OUTPUT

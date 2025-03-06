@@ -1,0 +1,44 @@
+name: Build and Push to ECR
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    name: Create a plan for an example terraform configuration
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-1
+          role-to-assume: arn:aws:iam::674890471878:role/GitHubActionsRole
+
+      - name: terraform plan
+        uses: dflook/terraform-plan@v1
+        with:
+          backend_config_file: ./infra/dev/backend.config
+          var_file: .infra/dev/vars/dev.tfvars
+
+  apply-plan:
+    runs-on: ubuntu-latest
+    name: Apply terraform plan
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: terraform apply
+        uses: dflook/terraform-apply@v1
+        with:
+          backend_config_file: ./infra/dev/backend.config
+          var_file: .infra/dev/vars/dev.tfvars
