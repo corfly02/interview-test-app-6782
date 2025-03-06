@@ -23,6 +23,7 @@ No resources.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_alert_contact_email"></a> [alert\_contact\_email](#input\_alert\_contact\_email) | The email address to send alerts to. | `string` | n/a | yes |
 | <a name="input_app_name"></a> [app\_name](#input\_app\_name) | The name of your application. | `string` | n/a | yes |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The AWS region you are deploying to | `string` | `"us-east-1"` | no |
 | <a name="input_container_port"></a> [container\_port](#input\_container\_port) | The container port and host port for your container | `number` | `8080` | no |

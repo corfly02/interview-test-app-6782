@@ -11,9 +11,10 @@ terraform {
 module "my_interview_app" {
   source = "./../modules/"
 
-  app_name       = var.app_name
-  vpc_cidr       = var.vpc_cidr
-  container_port = var.container_port
+  app_name            = var.app_name
+  vpc_cidr            = var.vpc_cidr
+  container_port      = var.container_port
+  alert_contact_email = var.alert_contact_email
 
   tags = var.tags
 }

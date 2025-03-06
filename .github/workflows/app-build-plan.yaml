@@ -37,35 +37,3 @@ jobs:
           cd app
           docker build -t $REGISTRY/$REPOSITORY:$IMAGE_TAG .
           docker push $REGISTRY/$REPOSITORY:$IMAGE_TAG
-
-  tf_docs:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        ref: ${{ github.event.pull_request.head.ref }}
-
-    - name: Render terraform docs inside the README.md and push changes back to PR branch
-      uses: terraform-docs/gh-actions@v1.3.0
-      with:
-        working-dir: modules
-        recursive: true
-        recursive-path: modules
-        output-file: README.md
-        output-method: inject
-        git-push: "true"
-        path: terraform
-
-  tf_fmt:
-    runs-on: ubuntu-latest
-    name: Fix terraform formatting in example terraform configuration
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: terraform fmt
-        uses: dflook/terraform-fmt@v1
-        with:
-          path: terraform

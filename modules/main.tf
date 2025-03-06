@@ -118,6 +118,44 @@ resource "aws_service_discovery_http_namespace" "this" {
   description = "CloudMap namespace for ${var.app_name}"
 }
 
+#Cloudwatch
+
+resource "aws_sns_topic" "error_log_alert" {
+  name = "log-alert-topic"
+}
+
+resource "aws_sns_topic_subscription" "email_subscription" {
+  topic_arn = aws_sns_topic.error_log_alert.arn
+  protocol  = "email"
+  endpoint  = var.alert_contact_email
+}
+
+resource "aws_cloudwatch_log_metric_filter" "error_filter" {
+  name           = "log-error-filter"
+  log_group_name = module.ecs_cluster.cloudwatch_log_group_name
+
+  pattern = "ERROR"
+
+  metric_transformation {
+    name      = "ErrorCount"
+    namespace = "LogMetrics"
+    value     = "1"
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "log_alarm" {
+  alarm_name          = "HighErrorLogs"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = aws_cloudwatch_log_metric_filter.error_filter.metric_transformation[0].name
+  namespace           = "LogMetrics"
+  period              = 60
+  statistic           = "Sum"
+  threshold           = 10
+  alarm_description   = "Triggered when 'ERROR' appears more than 10 times in a minute"
+  alarm_actions       = [aws_sns_topic.error_log_alert.arn]
+}
+
 #ALB
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
@@ -250,4 +288,3 @@ resource "aws_s3_bucket_ownership_controls" "app_bucket_ownership_rule" {
     object_ownership = "BucketOwnerEnforced"
   }
 }
-

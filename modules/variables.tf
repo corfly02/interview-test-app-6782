@@ -34,6 +34,20 @@ variable "container_port" {
   description = "The container port and host port for your container"
 }
 
+#Cloudwatch
+
+variable "retention_in_days" {
+  type        = number
+  description = "The number of days to retain log events."
+  default     = 30
+}
+
+variable "alert_contact_email" {
+  type        = string
+  description = "The email address to send alerts to."
+}
+
+
 #ecr
 variable "image_tag_mutability" {
   type        = string

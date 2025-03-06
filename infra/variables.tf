@@ -29,3 +29,9 @@ variable "container_port" {
   description = "The container port and host port for your container"
   default     = 8080
 }
+
+#Cloudwatch
+variable "alert_contact_email" {
+  type        = string
+  description = "The email address to send alerts to."
+}
