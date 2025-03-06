@@ -1,13 +1,17 @@
-FROM python:3.9-slim
+# Use Python 3.9+
+FROM python:3.9
 
-# Set the working directory inside the container
+# Set working directory
 WORKDIR /app
 
-# Copy the script and requirements
-COPY ./app/cat_app.py .
-COPY ./app/requirements.txt .
+# Copy application files
+COPY . .
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir flask requests pillow gunicorn
 
-CMD ["python", "cat_app.py"]
+# Expose port
+EXPOSE 5000
+
+# Run the Flask app with Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
