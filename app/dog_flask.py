@@ -41,7 +41,7 @@ def create_dog_gif():
             duration=500,
             loop=0
         )
-        print(f"🎉 GIF saved as {GIF_FILENAME}")
+        print(f"GIF saved as {GIF_FILENAME}")
         return GIF_FILENAME
     else:
         print("No images available to create a GIF.")
@@ -49,7 +49,7 @@ def create_dog_gif():
 
 @app.route("/")
 def home():
-    return jsonify({"message": "🐶 Welcome to the Dog GIF Generator API! Use /generate to create a GIF."})
+    return jsonify({"message": "Welcome to the Dog GIF Generator API! Use /generate to create a GIF."})
 
 @app.route("/generate")
 def generate_dog_gif():

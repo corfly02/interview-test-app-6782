@@ -14,4 +14,4 @@ RUN pip install --no-cache-dir flask requests pillow gunicorn
 EXPOSE 5000
 
 # Run the Flask app with Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "dog_flask:app"]
