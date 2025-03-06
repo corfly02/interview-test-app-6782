@@ -27,6 +27,7 @@ jobs:
       - name: terraform plan
         uses: dflook/terraform-plan@v1
         with:
+          path: ./infra
           backend_config_file: ./infra/dev/backend.config
           var_file: ./infra/dev/vars/dev.tfvars
 
@@ -40,5 +41,6 @@ jobs:
       - name: terraform apply
         uses: dflook/terraform-apply@v1
         with:
+          path: ./infra
           backend_config_file: ./infra/dev/backend.config
           var_file: ./infra/dev/vars/dev.tfvars
