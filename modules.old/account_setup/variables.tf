@@ -1,8 +1,8 @@
 #global
 variable "aws_region" {
-  type = string
+  type        = string
   description = "The default region you are deploying resources"
-  default = "us-east-1"
+  default     = "us-east-1"
 }
 
 variable "tags" {

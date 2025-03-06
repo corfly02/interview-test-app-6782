@@ -1,3 +1,4 @@
+data "aws_region" "current" {}
 data "aws_caller_identity" "current" {}
 data "aws_availability_zones" "available" {}
 
@@ -6,14 +7,13 @@ locals {
   container_name = format("%s-%s-container", var.app_name, lookup(var.tags, "environment"))
 }
 
-
+#ECS Cluster
 module "ecs_cluster" {
   source  = "terraform-aws-modules/ecs/aws//modules/cluster"
   version = "5.12.0"
 
   cluster_name = format("%s-%s-cluster", var.app_name, lookup(var.tags, "environment"))
 
-  # Capacity provider
   fargate_capacity_providers = {
     FARGATE = {
       default_capacity_provider_strategy = {
@@ -24,6 +24,7 @@ module "ecs_cluster" {
   }
 }
 
+#ECS Service
 module "ecs_service" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "5.12.0"
@@ -34,23 +35,17 @@ module "ecs_service" {
   cpu    = 1024
   memory = 4096
 
-  # Enables ECS Exec
   enable_execute_command = true
 
-  # Container definition(s)
-  container_definitions = {
+  task_exec_iam_role_policies = {
+    firehose = "arn:aws:iam::aws:policy/AmazonKinesisFirehoseFullAccess"
+  }
 
-    fluent-bit = {
-      cpu       = 512
-      memory    = 1024
-      essential = true
-      image     = nonsensitive(data.aws_ssm_parameter.fluentbit.value)
-      firelens_configuration = {
-        type = "fluentbit"
-      }
-      memory_reservation = 50
-      user               = "0"
-    }
+  tasks_iam_role_policies = {
+    firehose = "arn:aws:iam::aws:policy/AmazonKinesisFirehoseFullAccess"
+  }
+
+  container_definitions = {
 
     (local.container_name) = {
       cpu       = 512
@@ -69,36 +64,10 @@ module "ecs_service" {
       # Example image used requires access to write to root filesystem
       readonly_root_filesystem = false
 
-      dependencies = [{
-        containerName = "fluent-bit"
-        condition     = "START"
-      }]
-
-      enable_cloudwatch_logging = false
+      enable_cloudwatch_logging = true
       log_configuration = {
-        logDriver = "awsfirelens"
-        options = {
-          Name                    = "firehose"
-          region                  = data.aws_region.current.name
-          delivery_stream         = format("%s-%s-stream", var.app_name, lookup(var.tags, "environment"))
-          log-driver-buffer-limit = "2097152"
-        }
+        logDriver = "awslogs"
       }
-
-      linux_parameters = {
-        capabilities = {
-          add = []
-          drop = [
-            "NET_RAW"
-          ]
-        }
-      }
-
-      # Not required for fluent-bit, just an example
-      volumes_from = [{
-        sourceContainer = "fluent-bit"
-        readOnly        = false
-      }]
 
       memory_reservation = 100
     }
@@ -118,7 +87,7 @@ module "ecs_service" {
 
   load_balancer = {
     service = {
-      target_group_arn = module.alb.target_groups["interview_ecs"].arn
+      target_group_arn = module.alb.target_groups["interview_app"].arn
       container_name   = local.container_name
       container_port   = var.container_port
     }
@@ -144,15 +113,12 @@ module "ecs_service" {
   }
 }
 
-data "aws_ssm_parameter" "fluentbit" {
-  name = "/aws/service/aws-for-fluent-bit/stable"
-}
-
 resource "aws_service_discovery_http_namespace" "this" {
   name        = format("%s-%s-namespace", var.app_name, lookup(var.tags, "environment"))
   description = "CloudMap namespace for ${var.app_name}"
 }
 
+#ALB
 module "alb" {
   source  = "terraform-aws-modules/alb/aws"
   version = "~> 9.0"
@@ -166,11 +132,11 @@ module "alb" {
 
   enable_deletion_protection = var.enable_deletion_protection
 
-  # Security Group
+  #Security Group
   security_group_ingress_rules = {
     all_http = {
-      from_port   = 80
-      to_port     = 80
+      from_port   = 8080
+      to_port     = 8080
       ip_protocol = "tcp"
       cidr_ipv4   = "0.0.0.0/0"
     }
@@ -184,7 +150,7 @@ module "alb" {
 
   listeners = {
     app_http = {
-      port     = 80
+      port     = 8080
       protocol = "HTTP"
 
       forward = {
@@ -213,13 +179,12 @@ module "alb" {
         unhealthy_threshold = 2
       }
 
-      # There's nothing to attach here in this definition. Instead,
-      # ECS will attach the IPs of the tasks to this target group
       create_attachment = false
     }
   }
 }
 
+#VPC
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 5.0"
@@ -257,3 +222,32 @@ resource "aws_ecr_lifecycle_policy" "lifecycle_rule" {
     }]
   })
 }
+
+#S3
+resource "aws_s3_bucket" "app_bucket" {
+  bucket = "${var.app_name}-${data.aws_caller_identity.current.id}-artifact-bucket"
+}
+
+resource "aws_s3_bucket_versioning" "app_bucket_versioning" {
+  bucket = aws_s3_bucket.app_bucket.id
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
+resource "aws_s3_bucket_public_access_block" "app_bucket_access" {
+  bucket                  = aws_s3_bucket.app_bucket.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_bucket_ownership_controls" "app_bucket_ownership_rule" {
+  bucket = aws_s3_bucket.app_bucket.id
+
+  rule {
+    object_ownership = "BucketOwnerEnforced"
+  }
+}
+
