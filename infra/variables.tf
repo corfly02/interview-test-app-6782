@@ -30,6 +30,11 @@ variable "container_port" {
   default     = 5000
 }
 
+variable "image_version" {
+  type        = string
+  description = "The version of your ECR image"
+}
+
 #Cloudwatch
 variable "alert_contact_email" {
   type        = string
