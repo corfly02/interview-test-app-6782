@@ -4,10 +4,10 @@ FROM python:3.9-slim
 WORKDIR /app
 
 # Copy the script and requirements
-COPY cat_gif_generator.py .
+COPY ./app/cat_app.py .
 COPY ./app/requirements.txt .
 
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-CMD ["python", "cat_gif_generator.py"]
+CMD ["python", "cat_app.py"]
