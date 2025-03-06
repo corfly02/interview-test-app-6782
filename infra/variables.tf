@@ -27,7 +27,7 @@ variable "vpc_cidr" {
 variable "container_port" {
   type        = number
   description = "The container port and host port for your container"
-  default     = 8080
+  default     = 5000
 }
 
 variable "image" {
