@@ -42,6 +42,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-region: us-east-1
+          role-to-assume: arn:aws:iam::674890471878:role/GitHubActionsRole
 
       - name: terraform apply
         uses: dflook/terraform-apply@v1
