@@ -4,8 +4,7 @@ FROM alpine:3.21
 RUN apk add --no-cache curl netcat-openbsd
 
 # Copy in our CAT RETRIEVER
-WORKDIR /app
-COPY run.sh /run.sh
+COPY ./app/run.sh /run.sh
 RUN chmod +x /run.sh
 
 # Expose port 8080 or whatever you want to deploy
