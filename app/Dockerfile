@@ -7,7 +7,7 @@ RUN apk add --no-cache curl netcat-openbsd
 COPY run.sh /run.sh
 RUN chmod +x /run.sh
 
-# Expose port 8080 or whatever you want to deploy you ape
+# Expose port 8080 or whatever you want to deploy
 EXPOSE 8080
 
 # Run the cat RETRIEVER

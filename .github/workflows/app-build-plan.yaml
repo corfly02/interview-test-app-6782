@@ -50,7 +50,9 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG} --network host --push -f app/ .
+          docker build -t ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG} --network host -f app/Dockerfile .
+          docker push ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG}
+
 
       - name: Set NEW_TAG output
         id: set_new_tag
