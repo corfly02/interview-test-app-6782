@@ -17,7 +17,7 @@ module "my_interview_app" {
   app_name            = var.app_name
   vpc_cidr            = var.vpc_cidr
   container_port      = var.container_port
-  image               = "${data.aws_caller_identity.current.id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${module.my_interview_app.aws_ecs_repository_name}:0.0.3"
+  image               = "${data.aws_caller_identity.current.id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${module.my_interview_app.aws_ecs_repository_name}:${var.image_version}"
   alert_contact_email = var.alert_contact_email
 
   tags = var.tags
