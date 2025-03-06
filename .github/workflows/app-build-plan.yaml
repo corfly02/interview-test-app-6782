@@ -50,6 +50,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
+          cd app/
           docker build -t ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG} --network host -f app/Dockerfile .
           docker push ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG}
 
