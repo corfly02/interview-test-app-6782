@@ -50,7 +50,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          pwd
+          cd interview-test-app-6782/
           docker build -t ${{ env.AWS_ACCOUNT }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPO }}:${NEW_TAG} --network host --push -f /app/ .
 
       - name: Set NEW_TAG output
