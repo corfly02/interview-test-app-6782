@@ -14,7 +14,7 @@ jobs:
     
     env:
       ECR_REPO: interview-app-project-repo
-      AWS_ACCOUNT: 674890471878
+      AWS_ACCOUNT: "674890471878"
       AWS_REGION: us-east-1
 
     steps:
