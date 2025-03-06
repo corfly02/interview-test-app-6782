@@ -13,6 +13,9 @@ permissions:
 jobs:
   tf_plan:
     runs-on: ubuntu-latest
+    defaults: 
+      run:
+        working-directory: ./infra
     name: Plan terraform configuration
     steps:
       - name: Checkout
@@ -27,12 +30,14 @@ jobs:
       - name: terraform plan
         uses: dflook/terraform-plan@v1
         with:
-          path: ./infra
           backend_config_file: ./infra/dev/backend.config
           var_file: ./infra/dev/vars/dev.tfvars
 
   apply-plan:
     runs-on: ubuntu-latest
+    defaults: 
+      run:
+        working-directory: ./infra
     needs: tf_plan
     name: Apply terraform configuration
     steps:
