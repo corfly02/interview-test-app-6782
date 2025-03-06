@@ -45,7 +45,7 @@ module "ecs_service" {
       cpu       = 512
       memory    = 1024
       essential = true
-      image     = "${data.aws_caller_identity.current.id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecs_repository.repositry.name}:$LATEST"
+      image     = "${data.aws_caller_identity.current.id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecs_repository.repository.name}:$LATEST"
       port_mappings = [
         {
           name          = local.container_name
