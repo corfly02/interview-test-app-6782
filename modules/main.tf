@@ -29,6 +29,8 @@ module "ecs_service" {
   source  = "terraform-aws-modules/ecs/aws//modules/service"
   version = "5.12.0"
 
+  depends_on = [aws_ecr_repository.repository]
+
   name        = format("%s-%s-service", var.app_name, lookup(var.tags, "environment"))
   cluster_arn = module.ecs_cluster.arn
 
@@ -43,7 +45,7 @@ module "ecs_service" {
       cpu       = 512
       memory    = 1024
       essential = true
-      image     = var.image
+      image     = "${data.aws_caller_identity.current.id}.dkr.ecr.${data.aws_region.current.name}.amazonaws.com/${aws_ecs_repository.repositry.name}:$LATEST"
       port_mappings = [
         {
           name          = local.container_name
